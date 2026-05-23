@@ -1,0 +1,15 @@
+# Folder spesifikasi
+/spesifikasi/
+/doc/spesifikasi/
+
+# LaTeX build artifacts in doc/
+/doc/*.aux
+/doc/*.bbl
+/doc/*.blg
+/doc/*.fdb_latexmk
+/doc/*.fls
+/doc/*.log
+/doc/*.out
+/doc/*.synctex.gz
+/doc/*.toc
+/doc/*.pdf
