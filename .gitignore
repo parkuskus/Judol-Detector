@@ -2,6 +2,21 @@
 /spesifikasi/
 /doc/spesifikasi/
 
+# Node / Vite
+/node_modules/
+/dist/
+/coverage/
+.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
 # LaTeX build artifacts in doc/
 /doc/*.aux
 /doc/*.bbl
