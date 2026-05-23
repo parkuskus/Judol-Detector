@@ -1,24 +1,28 @@
-type ScanStats = {
-  totalKeywords: number;
-  exactMatches: number;
-  fuzzyMatches: number;
-};
+import type { PopupStats, ScanRequest, ScanResponse } from '../types';
 
-const initialStats: ScanStats = {
+const initialStats: PopupStats = {
   totalKeywords: 0,
   exactMatches: 0,
+  regexMatches: 0,
   fuzzyMatches: 0
 };
 
-function persistStats(stats: ScanStats): void {
+function persistStats(stats: PopupStats): void {
   chrome.storage.local.set(stats);
 }
 
 function scanPage(): void {
   const text = document.body?.innerText ?? '';
-  const stats: ScanStats = {
-    totalKeywords: text.trim().length > 0 ? 1 : 0,
+  const request: ScanRequest = {
+    url: location.href,
+    text,
+    timestamp: Date.now()
+  };
+
+  const stats: PopupStats = {
+    totalKeywords: request.text.trim().length > 0 ? 1 : 0,
     exactMatches: 0,
+    regexMatches: 0,
     fuzzyMatches: 0
   };
 
@@ -28,7 +32,8 @@ function scanPage(): void {
 chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
   if (message === 'scan-now') {
     scanPage();
-    sendResponse({ ok: true });
+    const response: ScanResponse = { ok: true };
+    sendResponse(response);
     return true;
   }
 
