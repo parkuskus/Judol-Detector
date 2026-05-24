@@ -13,9 +13,9 @@ function normalizeText(text: string): string {
 export function collectScanTargets(root: ParentNode = document): ScanTarget[] {
 	const targets: ScanTarget[] = [];
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null);
-	let currentNode = walker.currentNode;
+	let currentNode: Node | null = walker.currentNode;
 
-	while (currentNode) {
+	while (currentNode !== null) {
 		if (currentNode instanceof Element && !isSkippableElement(currentNode)) {
 			const text = normalizeText(currentNode.textContent ?? '');
 			if (text.length > 0) {
