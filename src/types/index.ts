@@ -12,6 +12,7 @@ export interface KeywordMatch {
 	startIndex: number;
 	endIndex: number;
 	occurrenceCount: number;
+	targetIndex?: number;
 	comparisonCount?: number;
 	score?: number;
 	executionTimeMs?: number;
@@ -63,6 +64,8 @@ export interface ScanResponse {
 export interface ScanTarget {
 	element: HTMLElement;
 	text: string;
+	index: number;
+	tagName: string;
 }
 
 export interface ContentPipelineState {

@@ -25,6 +25,7 @@ export function collectScanTargets(root: ParentNode = document): ScanTarget[] {
 	const seenElements = new Set<HTMLElement>();
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
 	let currentNode: Node | null = walker.currentNode;
+	let index = 0;
 
 	while (currentNode !== null) {
 		if (currentNode instanceof Text) {
@@ -33,7 +34,13 @@ export function collectScanTargets(root: ParentNode = document): ScanTarget[] {
 
 			if (text.length > 0 && parentElement && isMeaningfulTextParent(parentElement) && !seenElements.has(parentElement)) {
 				seenElements.add(parentElement);
-				targets.push({ element: parentElement, text });
+				targets.push({
+					element: parentElement,
+					text,
+					index,
+					tagName: parentElement.tagName.toLowerCase()
+				});
+				index += 1;
 			}
 		}
 

@@ -1,4 +1,4 @@
-import type { ContentPipelineState, PopupStats, ScanRequest, ScanResponse } from '../types';
+import type { ContentPipelineState, PopupStats, ScanRequest, ScanResponse, ScanTarget, KeywordMatch } from '../types';
 import { applyHighlights, clearHighlights } from './highlighter';
 import { collectScanTargets, readDocumentText } from './scanner';
 import { hideTooltip } from './tooltip';
@@ -22,6 +22,23 @@ function persistStats(stats: PopupStats): void {
   chrome.storage.local.set(stats);
 }
 
+function buildMatches(targets: ScanTarget[]): Array<{ target: ScanTarget; match: KeywordMatch }> {
+  return targets.map((target) => ({
+    target,
+    match: {
+      keyword: target.text,
+      matchedText: target.text,
+      algorithm: 'Fuzzy',
+      source: 'fuzzy',
+      startIndex: 0,
+      endIndex: target.text.length,
+      occurrenceCount: 1,
+      targetIndex: target.index,
+      executionTimeMs: 0
+    }
+  }));
+}
+
 function buildPipelineState(): ContentPipelineState {
   const request = createRequest();
   const targets = collectScanTargets(document);
@@ -43,14 +60,14 @@ function runScan(): ScanResponse {
   hideTooltip();
 
   const pipeline = buildPipelineState();
-  void pipeline.targets;
-  applyHighlights([]);
+  const matchedTargets = buildMatches(pipeline.targets);
+  applyHighlights(matchedTargets);
   persistStats(pipeline.stats);
 
   return {
     ok: true,
     result: {
-      matches: [],
+      matches: matchedTargets.map(({ match }) => match),
       totalMatches: pipeline.stats.totalKeywords,
       exactMatches: pipeline.stats.exactMatches,
       regexMatches: pipeline.stats.regexMatches,
@@ -69,6 +86,43 @@ chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) =
 
   return false;
 });
+
+let scanTimer: number | undefined;
+let internalMutation = false;
+
+function scheduleScan(): void {
+  if (scanTimer !== undefined) {
+    window.clearTimeout(scanTimer);
+  }
+
+  scanTimer = window.setTimeout(() => {
+    internalMutation = true;
+    runScan();
+    window.setTimeout(() => {
+      internalMutation = false;
+    }, 0);
+  }, 150);
+}
+
+const observer = new MutationObserver((mutations) => {
+  if (internalMutation) {
+    return;
+  }
+
+  if (mutations.some((mutation) => mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0 || mutation.type === 'characterData')) {
+    scheduleScan();
+  }
+});
+
+const observerRoot = document.body ?? document.documentElement;
+
+if (observerRoot) {
+  observer.observe(observerRoot, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+}
 
 runScan();
 

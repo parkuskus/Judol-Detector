@@ -1,6 +1,7 @@
 import type { TooltipData } from '../types';
 
 const TOOLTIP_ID = 'judol-tooltip';
+const bindings = new WeakMap<HTMLElement, () => void>();
 
 function getTooltipElement(): HTMLDivElement {
 	let tooltip = document.getElementById(TOOLTIP_ID) as HTMLDivElement | null;
@@ -52,4 +53,45 @@ export function hideTooltip(): void {
 	}
 
 	tooltip.style.display = 'none';
+}
+
+function handleTooltipMove(event: MouseEvent): void {
+	moveTooltip(event.clientX, event.clientY);
+}
+
+function handleTooltipEnter(data: TooltipData, event: MouseEvent): void {
+	renderTooltip(data);
+	moveTooltip(event.clientX, event.clientY);
+}
+
+function handleTooltipLeave(): void {
+	hideTooltip();
+}
+
+export function bindTooltipToElement(element: HTMLElement, data: TooltipData): void {
+	unbindTooltipFromElement(element);
+
+	const onEnter = (event: MouseEvent): void => handleTooltipEnter(data, event);
+	const onMove = (event: MouseEvent): void => handleTooltipMove(event);
+	const onLeave = (): void => handleTooltipLeave();
+
+	element.addEventListener('mouseenter', onEnter);
+	element.addEventListener('mousemove', onMove);
+	element.addEventListener('mouseleave', onLeave);
+
+	bindings.set(element, () => {
+		element.removeEventListener('mouseenter', onEnter);
+		element.removeEventListener('mousemove', onMove);
+		element.removeEventListener('mouseleave', onLeave);
+	});
+}
+
+export function unbindTooltipFromElement(element: HTMLElement): void {
+	const cleanup = bindings.get(element);
+	if (!cleanup) {
+		return;
+	}
+
+	cleanup();
+	bindings.delete(element);
 }
