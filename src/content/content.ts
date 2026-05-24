@@ -1,5 +1,5 @@
-import type { ContentPipelineState, PopupStats, ScanRequest, ScanResponse, ScanTarget, KeywordMatch } from '../types';
-import { applyHighlights, clearHighlights } from './highlighter';
+import type { ContentPipelineState, DetectionResult, PopupStats, ScanRequest, ScanResponse } from '../types';
+import { applyDetectionResult, clearHighlights } from './highlighter';
 import { collectScanTargets, readDocumentText } from './scanner';
 import { hideTooltip } from './tooltip';
 
@@ -22,21 +22,16 @@ function persistStats(stats: PopupStats): void {
   chrome.storage.local.set(stats);
 }
 
-function buildMatches(targets: ScanTarget[]): Array<{ target: ScanTarget; match: KeywordMatch }> {
-  return targets.map((target) => ({
-    target,
-    match: {
-      keyword: target.text,
-      matchedText: target.text,
-      algorithm: 'Fuzzy',
-      source: 'fuzzy',
-      startIndex: 0,
-      endIndex: target.text.length,
-      occurrenceCount: 1,
-      targetIndex: target.index,
-      executionTimeMs: 0
-    }
-  }));
+function createEmptyDetectionResult(textLength: number): DetectionResult {
+  return {
+    matches: [],
+    totalMatches: 0,
+    exactMatches: 0,
+    regexMatches: 0,
+    fuzzyMatches: 0,
+    scannedTextLength: textLength,
+    executionTimeMs: 0
+  };
 }
 
 function buildPipelineState(): ContentPipelineState {
@@ -60,20 +55,14 @@ function runScan(): ScanResponse {
   hideTooltip();
 
   const pipeline = buildPipelineState();
-  const matchedTargets = buildMatches(pipeline.targets);
-  applyHighlights(matchedTargets);
+  const detectionResult = createEmptyDetectionResult(pipeline.request.text.length);
+  applyDetectionResult(detectionResult, pipeline.targets);
   persistStats(pipeline.stats);
 
   return {
     ok: true,
     result: {
-      matches: matchedTargets.map(({ match }) => match),
-      totalMatches: pipeline.stats.totalKeywords,
-      exactMatches: pipeline.stats.exactMatches,
-      regexMatches: pipeline.stats.regexMatches,
-      fuzzyMatches: pipeline.stats.fuzzyMatches,
-      scannedTextLength: pipeline.request.text.length,
-      executionTimeMs: 0
+      ...detectionResult
     }
   };
 }

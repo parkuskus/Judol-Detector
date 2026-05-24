@@ -1,4 +1,4 @@
-import type { ElementHighlight, KeywordMatch, ScanTarget, TooltipData } from '../types';
+import type { DetectionResult, ElementHighlight, KeywordMatch, ScanTarget, TooltipData } from '../types';
 import { bindTooltipToElement, unbindTooltipFromElement } from './tooltip';
 
 const HIGHLIGHT_ATTRIBUTE = 'data-judol-highlight';
@@ -29,10 +29,20 @@ export function clearHighlights(root: ParentNode = document): void {
 	});
 }
 
-export function applyHighlights(highlightPairs: Array<{ target: ScanTarget; match: KeywordMatch }>): ElementHighlight[] {
+export function applyDetectionResult(result: DetectionResult, targets: ScanTarget[]): ElementHighlight[] {
 	const highlights: ElementHighlight[] = [];
+	const targetByIndex = new Map<number, ScanTarget>();
 
-	highlightPairs.forEach(({ target, match }) => {
+	targets.forEach((target) => {
+		targetByIndex.set(target.index, target);
+	});
+
+	result.matches.forEach((match) => {
+		const target = typeof match.targetIndex === 'number' ? targetByIndex.get(match.targetIndex) : undefined;
+		if (!target) {
+			return;
+		}
+
 		const element = target.element;
 		const tooltipData: TooltipData = {
 			keyword: match.keyword,
@@ -53,4 +63,19 @@ export function applyHighlights(highlightPairs: Array<{ target: ScanTarget; matc
 	});
 
 	return highlights;
+}
+
+export function applyHighlights(highlightPairs: Array<{ target: ScanTarget; match: KeywordMatch }>): ElementHighlight[] {
+	return applyDetectionResult(
+		{
+			matches: highlightPairs.map(({ match }) => match),
+			totalMatches: highlightPairs.length,
+			exactMatches: 0,
+			regexMatches: 0,
+			fuzzyMatches: 0,
+			scannedTextLength: 0,
+			executionTimeMs: 0
+		},
+		highlightPairs.map(({ target }) => target)
+	);
 }
