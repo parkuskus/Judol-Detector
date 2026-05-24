@@ -1,5 +1,16 @@
 export type AlgorithmName = 'KMP' | 'BM' | 'Regex' | 'Fuzzy' | 'AhoCorasick' | 'RabinKarp';
 
+export interface DetectionContext {
+	url: string;
+	text: string;
+	timestamp: number;
+}
+
+export interface DetectionEngine {
+	name: AlgorithmName;
+	detect(context: DetectionContext): Promise<KeywordMatch[]> | KeywordMatch[];
+}
+
 export type MatchSource = 'exact' | 'regex' | 'fuzzy';
 
 export type MatchKind = 'keyword' | 'pattern' | 'image' | 'tooltip';

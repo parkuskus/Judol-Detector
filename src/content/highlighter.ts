@@ -64,18 +64,3 @@ export function applyDetectionResult(result: DetectionResult, targets: ScanTarge
 
 	return highlights;
 }
-
-export function applyHighlights(highlightPairs: Array<{ target: ScanTarget; match: KeywordMatch }>): ElementHighlight[] {
-	return applyDetectionResult(
-		{
-			matches: highlightPairs.map(({ match }) => match),
-			totalMatches: highlightPairs.length,
-			exactMatches: 0,
-			regexMatches: 0,
-			fuzzyMatches: 0,
-			scannedTextLength: 0,
-			executionTimeMs: 0
-		},
-		highlightPairs.map(({ target }) => target)
-	);
-}
