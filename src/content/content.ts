@@ -1,5 +1,5 @@
 import type { ContentPipelineState, DetectionContext, DetectionResult, PopupStats, ScanRequest, ScanResponse, ScanTarget } from '../types';
-import { runDetectionEngines } from '../algorithms';
+import { runDetectionEnginesDetailed } from '../algorithms';
 import { applyDetectionResult, clearHighlights } from './highlighter';
 import { collectScanTargets, readDocumentText } from './scanner';
 import { hideTooltip } from './tooltip';
@@ -26,14 +26,14 @@ function buildPipelineState(): ContentPipelineState {
   };
 }
 
-async function buildDetectionResult(request: ScanRequest, targets: ScanTarget[]): Promise<DetectionResult> {
+async function buildDetectionResult(request: ScanRequest, targets: ScanTarget[]): Promise<DetectionResult & { timings: { kmp: number; bm: number; regex: number; fuzzy: number } }> {
   const detectionContext: DetectionContext = {
     url: request.url,
     text: request.text,
     timestamp: request.timestamp,
     targets
   };
-  const matches = await runDetectionEngines(detectionContext);
+  const { matches, timings } = await runDetectionEnginesDetailed(detectionContext);
   const exactMatches = matches.filter((match) => match.source === 'exact').length;
   const regexMatches = matches.filter((match) => match.source === 'regex').length;
   const fuzzyMatches = matches.filter((match) => match.source === 'fuzzy').length;
@@ -45,7 +45,8 @@ async function buildDetectionResult(request: ScanRequest, targets: ScanTarget[])
     regexMatches,
     fuzzyMatches,
     scannedTextLength: request.text.length,
-    executionTimeMs: 0
+    executionTimeMs: timings.kmp + timings.bm + timings.regex + timings.fuzzy,
+    timings
   };
 }
 
@@ -56,11 +57,20 @@ async function runScan(): Promise<ScanResponse> {
   const pipeline = buildPipelineState();
   const detectionResult = await buildDetectionResult(pipeline.request, pipeline.targets);
   applyDetectionResult(detectionResult, pipeline.targets);
+  const kmpMatches = detectionResult.matches.filter((m) => m.algorithm === 'KMP').length;
+  const bmMatches = detectionResult.matches.filter((m) => m.algorithm === 'BM').length;
   const stats: PopupStats = {
     totalKeywords: detectionResult.totalMatches,
     exactMatches: detectionResult.exactMatches,
     regexMatches: detectionResult.regexMatches,
-    fuzzyMatches: detectionResult.fuzzyMatches
+    fuzzyMatches: detectionResult.fuzzyMatches,
+    kmpMatches,
+    bmMatches,
+    executionTimeMsKmp: detectionResult.timings.kmp,
+    executionTimeMsBm: detectionResult.timings.bm,
+    executionTimeMsRegex: detectionResult.timings.regex,
+    executionTimeMsFuzzy: detectionResult.timings.fuzzy,
+    lastScanMs: detectionResult.executionTimeMs
   };
 
   persistStats(stats);

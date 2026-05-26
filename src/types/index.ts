@@ -53,6 +53,13 @@ export interface PopupStats {
 	exactMatches: number;
 	regexMatches: number;
 	fuzzyMatches: number;
+	kmpMatches: number;
+	bmMatches: number;
+	executionTimeMsKmp: number;
+	executionTimeMsBm: number;
+	executionTimeMsRegex: number;
+	executionTimeMsFuzzy: number;
+	lastScanMs: number;
 }
 
 export interface TooltipData {
