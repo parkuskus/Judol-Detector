@@ -78,9 +78,9 @@
 	\fancyhead[R]{%
         \begin{minipage}[b]{8.3cm}
             \raggedleft\small
-            \textbf{IF2224 Teori Bahasa Formal dan Otomata} \\
-            \textbf{Laporan Akhir Tugas Besar}\\
-            \textit{Semester II 2025/2026}
+            \textbf{IF2211 Strategi Algoritma} \\
+            \textbf{Laporan Akhir Tugas Besar 3}\\
+            Semester II 2025/2026
 		\end{minipage}
 	}%
 	\renewcommand{\headrulewidth}{0.4pt}%
@@ -99,9 +99,9 @@
 \fancyhead[R]{%
     \begin{minipage}[b]{8.3cm}
         \raggedleft\small
-        \textbf{IF2224 Teori Bahasa Formal dan Otomata}\\
-        \textbf{Laporan Akhir Tugas Besar}\\
-        \textit{Semester II 2025/2026}
+        \textbf{IF2211 Strategi Algoritma} \\
+        \textbf{Laporan Akhir Tugas Besar 3}\\
+        Semester II 2025/2026
 	\end{minipage}
 }
 
@@ -119,13 +119,11 @@
     \centering
 
     % ---------- Judul utama ----------
-    {\LARGE \textbf{Tugas Besar}\par}
+    {\LARGE \textbf{Tugas Besar 3}\par}
+    \vspace{0.5cm}
+    {\large IF2211 Strategi Algoritma\par}
     \vspace{0.2cm}
-    {\LARGE \textbf{Milestone 1}\par}
-    \vspace{0.8cm}
-    {\large IF2224 Teori Bahasa Formal dan Otomata\par}
-    \vspace{0.2cm}
-    {\large Lexical Analysis\par}
+    {\large Implementasi Pattern Matching pada Chromium Browser Extension untuk Deteksi Judi Online\par}
     \vspace{0.2cm}
     {\large Semester 2 Tahun 2025/2026\par}
 
@@ -137,13 +135,12 @@
     \vspace{0.8cm}
     {\bfseries Disusun oleh:\par}
     \vspace{0.2cm}
-    \textbf{Kai}
+    \textbf{SL0T999}
     \vspace{0.5cm} \\
     \begin{tabular}{l l}
-        Jonathan Kris Wicaksono     & (13524023) \\
         Vincent Rionarlie           & (13524031) \\
-        Muhammad Aufar Rizqi Kusuma & (13524061) \\
-        Bryan Pratama Putra Hendra  & (13524067)
+        Jason Edward Salim          & (13524034) \\
+        Muhammad Aufar Rizqi Kusuma & (13524061)
     \end{tabular}
 
     % ---------- Institusi ----------
@@ -163,21 +160,39 @@
 
 \chapter{Pendahuluan}
 \input{sections/01-pendahuluan}
+% Deskripsi tugas (dapat menyalin spesifikasi tugas ini).
 
-\chapter{Dasar Teori}
+\chapter{Landasan Teori}
 \input{sections/02-dasar-teori}
+% Dasar teori algoritma Knuth-Morris-Pratt dan Boyer-Moore secara umum (serta algortima Aho-Corasick dan Rabin Karp  jika mengerjakan bonus).
+% Penjelasan singkat mengenai browser extension yang dibangun.
 
-\chapter{Perancangan dan Implementasi}
-\input{sections/03-implementasi}
+\chapter{Analisis Pemecahan Masalah}
+\input{sections/03-analisis-pengujian-masalah.tex}
+% Langkah-langkah pemecahan masalah.
+% Proses pemetaan masalah menjadi elemen-elemen algoritma KMP dan BM.
+% Fitur fungsional dan arsitektur extension yang dibangun.
+% Contoh ilustrasi kasus.
 
-\chapter{Pengujian}
-\input{sections/04-eksperimen}
+\chapter{Implementasi dan Pengujian}
+\input{sections/04-implementasi-pengujian.tex}
+% Spesifikasi teknis program (struktur data, fungsi, dan prosedur yang dibangun).
+% Penjelasan tata cara penggunaan extension (interface, fitur-fitur yang disediakan).
+% Hasil pengujian minimal 5 kasus dengan variasi algoritma, dan jenis halaman yang berbeda.
+% Analisis hasil pengujian dan perbandingan performa algoritma.
 
 \chapter{Penutup}
 \input{sections/05-penutup}
+% Kesimpulan dan saran.
 
 \chapter{Lampiran}
 \input{sections/06-lampiran}
+% Pernyataan Tidak Melakukan Kecurangan
+% Tautan repository Github 
+% Tautan Video (jika mengerjakan bonus)
+% Tabel Checklist Spesifikasi
+% Tabel Pembagian Tugas
+
 
 \nocite{*}
 \bibliography{dafpus}

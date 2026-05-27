@@ -1,2 +1,112 @@
+\section{Latar Belakang}
+Luffy adalah seorang mahasiswa Teknik Informatika yang sedang menjalani semester akhirnya bersama timnya. Setelah mempelajari berbagai materi selama masa perkuliahan, mereka mendapatkan tugas besar terakhir sebagai bentuk penerapan ilmu yang telah dipelajari. Luffy ingin membuat sebuah proyek yang tidak hanya memenuhi kebutuhan akademik, tetapi juga memiliki hubungan dengan permasalahan yang sering ditemui di kehidupan sehari-hari.
 
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{01-pendahuluan/luffy-tugas.png}
+        \caption{Luffy mengerjakan tugas (Sumber: AI Generated Image)}
+    \end{center}
+\end{figure}
 
+Luffy adalah seorang mahasiswa Teknik Informatika yang sedang menjalani semester akhirnya bersama timnya. Setelah mempelajari berbagai materi selama masa perkuliahan, mereka mendapatkan tugas besar terakhir sebagai bentuk penerapan ilmu yang telah dipelajari. Luffy ingin membuat sebuah proyek yang tidak hanya memenuhi kebutuhan akademik, tetapi juga memiliki hubungan dengan permasalahan yang sering ditemui di kehidupan sehari-hari.
+
+Saat menggunakan internet untuk belajar, mencari referensi, maupun membuka berbagai website, Luffy sering menemukan kemunculan iklan dan konten perjudian online yang tersebar di berbagai halaman web. Tidak jarang, konten tersebut menggunakan variasi penulisan yang unik dan tersamarkan agar sulit dikenali secara langsung. Dari situ, Luffy mulai tertarik untuk mempelajari bagaimana sebuah sistem dapat mengenali pola-pola tertentu pada teks secara otomatis dan efisien.
+
+Berangkat dari ide tersebut, Luffy dan timnya memutuskan untuk mengembangkan sebuah browser extension bernama Judol Detector sebagai proyek tugas besar mereka. Melalui proyek ini, mereka berharap dapat menggabungkan konsep algoritma, pemrosesan string, dan pengembangan perangkat lunak ke dalam sebuah aplikasi yang interaktif dan aplikatif.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{01-pendahuluan/visualiasi.png}
+        \caption{Visualisasi Browser Extension
+            (Sumber: Asisten IRK)}
+    \end{center}
+\end{figure}
+
+\section{Spesifikasi Wajib}
+Pada tugas besar ini, buatlah sebuah chromium browser extension yang dapat mendeteksi informasi yang mengandung unsur judol. Sebagai catatan, seperti yang biasa kita temukan dalam website sekarang dengan format \texttt{<kata><angka>}. Contoh: \texttt{GACOR99, MAXWIN88, MADU308}, dan sebagainya. Sistem harus memiliki minimal fitur dengan detail seperti berikut.
+
+\begin{enumerate}
+    \item Extension yang dibuat pada tugas besar ini dikembangkan dengan bahasa Typescript. Dalam proses pencocokan kata kunci, sistem wajib mengimplementasikan algoritma Knuth-Morris-Pratt dan Boyer Moore serta RegEx. Untuk algoritma selain RegEx, pencarian dilakukan menggunakan file \texttt{keyword.txt} (file ini boleh dimodifikasi sesuai kebutuhan) yang dipisahkan dengan endline untuk melakukan string matching secara iterative, sehingga pengguna tidak memasukkan input, tapi sistem yang membaca file tersebut secara langsung.
+
+          Untuk pencarian dengan regex, format pencarian seminimal mungkin dapat menghandle 2 atau 3 angka di belakang kata tanpa spasi. Contoh: MAXWIN234, SLOT99. Test case yang diberikan nanti akan sangat bervariasi, sehingga pastikan pencarian RegEx diimplementasikan dengan detail dan dapat menghandle banyak edge case. Adapun juga algoritma Aho-Corasick dan Rabin Karp apabila ingin mengerjakan bonus, sesuai tertera di Spesifikasi Bonus dibawah.
+
+    \item Perlu diketahui bahwa, Developer Judol pun juga membuat penamaan dari websitenya, seperti pada teknik Phising, jadi membuat nama domain yang serupa dengan pada umumnya, namun nyatanya berbeda. Ini terjadi oleh karena adanya perbedaan kode komputer (unicode), dan komputer mengiranya adalah karakter yang berbeda.
+
+          Maka dari itu, sistem harus bisa membaca kecocokan secara exact matching dan juga fuzzy matching (apabila tidak ditemukan kecocokan yang persis). Untuk setiap kata kunci yang tidak memiliki kemunculan sama sekali pada saat exact matching, lakukan pencarian kembali dengan perhitungan tingkat kemiripan menggunakan algoritma Weighted Levenshtein Distance. Penyesuaian bobot (weight) ini krusial karena pelaku sering kali menyiasati strategi dengan menggunakan huruf pengganti yang mirip secara visual (misalnya mengubah huruf 'O' menjadi angka '0', 'A' menjadi '4', atau 'I' menjadi '1'). Implementasi harus memperhatikan hal-hal berikut:
+
+          \begin{enumerate}
+              \item Weighted Cost: Berikan bobot penalti yang lebih kecil untuk substitusi karakter yang mirip secara visual dibandingkan dengan karakter yang benar-benar berbeda.
+              \item Thresholding: Tentukan nilai ambang batas (threshold) kemiripan yang tepat untuk memastikan sistem tetap memberikan hasil yang relevan namun tetap menghindari munculnya false positive.
+          \end{enumerate}
+          Algoritma ini memungkinkan sistem untuk tetap menampilkan hasil pencarian yang relevan meskipun terdapat perbedaan minor, kesalahan ketik, atau upaya manipulasi teks oleh pengguna. Perlu diperhatikan bahwa secara konsep, exact matching juga merupakan bagian dari fuzzy matching.
+
+          \[
+              \operatorname{lev}(a,b)=
+              \begin{cases}
+                  |a|                                                                          & \text{if } |b|=0,                                         \\
+                  |b|                                                                          & \text{if } |a|=0,                                         \\
+                  \operatorname{lev}(\operatorname{tail}(a),\operatorname{tail}(b))            & \text{if } \operatorname{head}(a)=\operatorname{head}(b), \\
+                  1+\min\{\,\operatorname{lev}(\operatorname{tail}(a),b),                                                                                  \\
+                  \quad\,\operatorname{lev}(a,\operatorname{tail}(b)),                                                                                     \\
+                  \quad\,\operatorname{lev}(\operatorname{tail}(a),\operatorname{tail}(b))\,\} & \text{otherwise.}
+              \end{cases}
+          \]
+
+    \item Jadi sistem menjalan pengecekan dengan hirarki sebagai berikut:
+          \begin{itemize}
+              \item Exact Matching: Algoritma pattern matching untuk mencari kata kunci dasar dari \texttt{keyword.txt}.
+              \item RegEx Matching: Secara paralel atau sekuensial, jalankan Regex untuk menangkap pola \texttt{<kata><angka>}.
+              \item Fuzzy Matching: Kalau string dalam DOM tidak lolos namun memiliki kemiripan, jalankan dengan Weighted Levenshtein Distance dalam upaya manipulasi karakter
+          \end{itemize}
+    \item Apabila ditemukan result keyword, maka elemen DOM terkait harus ditandai, dengan warna bebas. Namun highlight tidak boleh merusak layout, tepat sasaran dan dapat terhapus saat rescanning.
+    \item Saat user hover pada elemen yang terdeteksi, maka tampilkan tooltip dengan informasi berikut:
+          \begin{itemize}
+              \item Keyword yang terdeteksi
+              \item Algoritma yang digunakan
+              \item Jumlah kemunculan
+              \item Waktu eksekusi
+          \end{itemize}
+          Tooltip dibuat dengan custom DOM element.
+    \item Terdapat juga statistik secara realtime pada popup extension yang menampilkan:
+          \begin{itemize}
+              \item Total keyword yang ditemukan
+              \item Perbandingan jumlah keyword yang satu dengan lainnya, menggunakan visualisasi
+              \item Waktu eksekusi tiap algoritma
+              \item Jumlah match tiap algoritma
+          \end{itemize}
+    \item Setiap kelompok harap mengisi nama kelompok dan anggotanya pada link berikut, paling lambat Minggu, 17 Mei 2026 23.59. Nama kelompok dilarang mengandung unsur SARA, penghinaan, provokasi, atau hal-hal lain yang bertentangan dengan norma hukum.
+
+          Perlu diperhatikan bahwa kelompok tubes untuk mata kuliah ini tidak boleh sama. Jadi jika berkelompok dengan X pada tubes ini, maka pada tubes selanjutnya anda tidak diperkenankan berkelompok dengan X.
+
+\end{enumerate}
+
+\section{Persyaratan dan Larangan}
+\begin{itemize}
+    \item Seluruh algoritma string matching wajib dibuat from scratch
+    \item Dilarang keras menggunakan
+          \begin{itemize}
+              \item \texttt{string.includes()}
+              \item \texttt{string.indexOf()}
+              \item Built-in search function
+              \item External string matching library
+          \end{itemize}
+    \item Implementasi manual wajib mencakup:
+          \begin{itemize}
+              \item Border function
+              \item Failure function
+              \item Last occurrence table
+              \item Shifting process
+              \item Comparison Counting
+
+          \end{itemize}
+    \item Regex diperbolehkan menggunakan regex engine dari JavaScript.
+\end{itemize}
+
+\section{Spesifikasi Bonus}
+\begin{enumerate}
+    \item (6 poin) \textbf{[Video]} Membuat video tentang browser extension Judol Detector yang dikembangkan, kemudian mengunggahnya di Youtube. Video dibuat harus memiliki audio dan menampilkan wajah dari setiap anggota kelompok. Untuk contoh video tubes stima tahun-tahun sebelumnya dapat dilihat di Youtube dengan kata kunci “Tubes Stima”, “strategi algoritma”, “Tugas besar stima”, dll. Semakin menarik dan informatif video, maka semakin banyak poin yang diberikan.
+    \item (4 poin) \textbf{[Algoritma Bonus]} Mengimplementasikan Algoritma Aho-Corasick dan Rabin Karp sebagai algoritma alternatif.
+    \item (5 poin) \textbf{[Censorship / Blur Teks]} Mengimplementasikan fitur blur visual secara otomatis pada elemen halaman web yang terdeteksi memuat konten judi online. Tidak hanya sekadar menghighlight teks, ekstensi langsung melakukan aksi blur pada elemen yang mengandung kata kunci judol, sehingga konten tersebut tidak terlihat oleh pengguna. Perlu diperhatikan, terdapat toggle on/off untuk ini.
+    \item (5 poin) \textbf{[Optical Character Recognition Pada Gambar]} Mengimplementasikan fitur OCR untuk mendeteksi kata kunci judi online yang sengaja disembunyikan dalam bentuk gambar. Ekstensi akan mengekstrak teks dari elemen gambar yang ditemukan di halaman, kemudian mencocokkannya dengan daftar kata kunci judol, lalu melakukan blur atau penggantian pada gambar yang terdeteksi mengandung konten judol. Fitur ini dapat diimplementasikan dengan Tesseract.js
+
+\end{enumerate}
