@@ -307,9 +307,84 @@ Secara kompleksitas, proses pembangunan trie dan failure link memerlukan waktu $
 
 Rabin-Karp memakai fungsi hash untuk membandingkan pola dengan jendela teks yang bergeser. Selama hash jendela dan hash pola sama, sistem melakukan verifikasi lanjutan terhadap isi string; jika tidak sama, jendela dapat segera dilewati. Pendekatan ini efektif untuk pencarian banyak pola atau ketika hash dapat dihitung ulang secara efisien menggunakan rolling hash \cite{karp1987efficient}.
 
-Algoritma ini penting dalam teori pattern matching karena memperlihatkan cara lain untuk mengurangi biaya komparasi karakter secara langsung. Walaupun potensi collision tetap ada, Rabin-Karp tetap menjadi referensi klasik untuk menjelaskan pencocokan berbasis hash.
+Secara formal, misalkan teks dinyatakan sebagai $T = t_0 t_1 \dots t_{n-1}$ dan pola sebagai $P = p_0 p_1 \dots p_{m-1}$ dengan $m \leq n$. Rabin-Karp mendefinisikan fungsi hash $h(\cdot)$ atas string sepanjang $m$ dan mencari pergeseran $s$ sehingga $h(P) = h(T[s..s+m-1])$. Agar pencarian efisien, hash jendela berikutnya tidak dihitung dari nol, melainkan diperbarui dengan rolling hash. Secara konseptual, algoritma ini memindahkan beban komparasi dari perbandingan karakter penuh ke perbandingan nilai hash yang jauh lebih murah, lalu hanya melakukan verifikasi karakter ketika hash memang cocok.
 
-\section{Regular Expression (RegEx) Matching}
+Komponen utama Rabin-Karp terdiri dari tiga bagian yang saling bergantung. Pertama, ada hash pola yang dihitung sekali pada awal preprocessing. Kedua, ada hash jendela teks yang selalu mewakili substring sepanjang $m$ dari teks utama. Ketiga, ada mekanisme rolling hash yang memperbarui nilai hash ketika jendela bergeser satu posisi ke kanan. Jika hash cocok, algoritma melakukan pemeriksaan ulang karakter demi karakter untuk memastikan bahwa kecocokan tersebut bukan collision. Karena itu, visualisasi Rabin-Karp paling mudah dipahami sebagai kombinasi antara pola, jendela teks, dan pembaruan hash yang terus bergerak.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, node distance=2.2cm and 2.8cm, every node/.style={draw, rounded corners, align=center, font=\small, minimum width=2.8cm, minimum height=1cm}]
+        \node (pattern) {Pola $P$\\\texttt{aba}};
+        \node (phash) [right=of pattern] {Hash pola\\$h(P)$};
+        \node (window) [below=of pattern] {Jendela teks\\$T[s..s+m-1]$};
+        \node (whash) [right=of window] {Hash jendela\\$h(T[s..s+m-1])$};
+        \node (check) [below=of whash] {Verifikasi karakter\\jika hash cocok};
+
+        \draw[->, thick] (pattern) -- (phash);
+        \draw[->, thick] (window) -- (whash);
+        \draw[->, thick] (phash) -- node[right, draw=none] {bandingkan} (whash);
+        \draw[->, thick] (whash) -- (check);
+        \draw[->, thick] (check.west) .. controls +(-2,0) and +(0,-1) .. node[below left=2mm and 2mm, draw=none] {rolling hash\\jendela berikutnya} (window.south);
+    \end{tikzpicture}
+    \caption{Komponen utama Rabin-Karp: hash pola, hash jendela teks, rolling hash, dan verifikasi karakter ketika hash cocok.}
+    \label{fig:rk-components}
+\end{figure}
+
+Setelah hash pola dihitung, setiap jendela teks dibandingkan melalui hash terlebih dahulu; bila hash tidak sama, jendela langsung digeser tanpa komparasi karakter tambahan. Jika hash sama, barulah algoritma memeriksa isi substring untuk memastikan bahwa kecocokan tersebut benar-benar valid. Alur inilah yang membuat pseudocode Rabin-Karp menjadi ringkas namun sangat representatif terhadap proses pencarian berbasis hash.
+
+\begin{tcolorbox}[breakable,title={Algoritma Rabin-Karp}]
+    \begin{algorithmic}[1]
+        \Procedure{RabinKarpSearch}{$text, pattern$}
+        \State $n \gets \text{length}(text)$
+        \State $m \gets \text{length}(pattern)$
+        \State $q \gets$ bilangan prima untuk modulus
+        \State $d \gets$ ukuran alfabet / basis hash
+        \State $hP \gets$ \Call{Hash}{$pattern, d, q$}
+        \State $hW \gets$ \Call{Hash}{$text[0..m-1], d, q$}
+        \State $power \gets d^{m-1} \bmod q$
+        \For{$s \gets 0$ to $n - m$}
+        \If{$hP = hW$}
+        \If{$text[s..s+m-1] = pattern$}
+        \State \textbf{report match} at shift $s$
+        \EndIf
+        \EndIf
+        \If{$s < n - m$}
+        \State $hW \gets$ rolling hash untuk jendela berikutnya
+        \EndIf
+        \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{tcolorbox}
+
+Pseudocode di atas menekankan bahwa Rabin-Karp tidak langsung membandingkan seluruh karakter pada setiap pergeseran. Sebaliknya, algoritma ini terlebih dahulu memeriksa kesetaraan hash, lalu hanya melakukan pemeriksaan string penuh ketika hash tersebut cocok. Karena itu, pseudocode menjadi masuk akal setelah pembahasan komponen hash pola, hash jendela, dan rolling hash selesai dijelaskan.
+
+Sebagai ilustrasi, algoritma Rabin-Karp dapat digunakan untuk mencari pola \texttt{aba} di dalam teks \texttt{abacaba}. Pada contoh ini, jendela teks bergeser satu karakter demi satu karakter dengan panjang yang sama seperti pola. Hash jendela pertama dan hash pola dibandingkan terlebih dahulu; jika hash tidak sama, jendela langsung dilewati, sedangkan jika hash sama maka substring diverifikasi secara karakter demi karakter. Ilustrasi berikut menunjukkan proses tersebut secara bertahap.
+
+\begin{table}[H]
+    \centering
+    \caption{Contoh langkah pencocokan Rabin-Karp pada teks \texttt{abacaba} dengan pola \texttt{aba}.}
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabularx}{\textwidth}{c c c c >{\raggedright\arraybackslash}X}
+        \toprule
+        Langkah & Shift $s$ & Window teks  & Hash dibandingkan           & Keputusan                         \\
+        \midrule
+        1       & 0         & \texttt{aba} & $h(\texttt{aba}) = h(P)$    & Verifikasi cocok, match ditemukan \\
+        2       & 1         & \texttt{bac} & $h(\texttt{bac}) \neq h(P)$ & Langsung geser, tanpa verifikasi  \\
+        3       & 2         & \texttt{aca} & $h(\texttt{aca}) \neq h(P)$ & Langsung geser, tanpa verifikasi  \\
+        4       & 3         & \texttt{cab} & $h(\texttt{cab}) \neq h(P)$ & Langsung geser, tanpa verifikasi  \\
+        5       & 4         & \texttt{aba} & $h(\texttt{aba}) = h(P)$    & Verifikasi cocok, match ditemukan \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Contoh di atas memperlihatkan bahwa Rabin-Karp bekerja dengan memindahkan fokus dari komparasi karakter penuh ke komparasi hash jendela. Ketika hash cocok, barulah substring diperiksa ulang untuk memastikan tidak terjadi collision. Pada teks yang panjang dengan banyak jendela yang tidak cocok, pendekatan ini bisa sangat efisien karena sebagian besar pergeseran hanya membutuhkan pembaruan hash, bukan komparasi ulang seluruh karakter.
+
+Kelebihan utama Rabin-Karp adalah kemampuannya menangani pencarian banyak pola atau pencarian berbasis rolling hash dengan biaya rata-rata yang efisien. Algoritma ini juga mudah diperluas karena inti logikanya sederhana: hitung hash, bandingkan, lalu verifikasi jika perlu. Di sisi lain, kekurangannya adalah adanya collision; dua string berbeda dapat saja memiliki hash yang sama sehingga verifikasi tetap diperlukan. Selain itu, jika rolling hash atau modulus yang dipilih kurang baik, performa praktisnya dapat menurun karena terlalu banyak collision atau distribusi hash yang tidak merata. Dengan demikian, Rabin-Karp kuat untuk implementasi yang mengandalkan hashing, tetapi kualitas hash menjadi faktor yang sangat menentukan.
+
+Secara kompleksitas, preprocessing hash pola memerlukan waktu $O(m)$ dan pembaruan rolling hash untuk setiap pergeseran juga dapat dilakukan dalam $O(1)$, sehingga pencarian rata-rata biasanya berada di sekitar $O(n + m)$. Namun, pada kasus terburuk ketika collision sering terjadi, Rabin-Karp dapat turun menjadi $O(nm)$ karena verifikasi karakter penuh dilakukan pada banyak jendela. Ruang tambahannya sendiri kecil, umumnya $O(1)$ selain penyimpanan input. Kompleksitas ini menjadikan Rabin-Karp menarik karena sangat sederhana secara konsep, tetapi tetap bergantung pada kualitas fungsi hash dan probabilitas collision yang muncul pada data.
+
+\section{Regular Expression (\texttt{RegEx}) Matching}
 
 Regular expression adalah notasi formal untuk mendeskripsikan pola string yang lebih umum daripada daftar kata kunci statis. Dalam praktik pemrograman, ekspresi reguler dipakai untuk mengenali bentuk teks tertentu seperti pola kata, angka, batas kata, atau gabungan beberapa kondisi sekaligus. Karena fleksibilitasnya, RegEx sering dipakai ketika sistem harus menangkap variasi penulisan yang masih mengikuti struktur umum tertentu \cite{mdnregexp}.
 
