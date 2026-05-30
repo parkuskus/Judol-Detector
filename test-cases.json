@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "version": "1.0",
+    "created": "2026-05-30T00:00:00Z",
+    "total_cases": 8,
+    "description": "Test suite minimal-optimal untuk deteksi konten judol"
+  },
+  "test_cases": [
+    {
+      "id": "TC-01",
+      "category": "exact_match_positive",
+      "input": "Promo terbaru! Daftar sekarang dan raih jackpot slot gacor maxwin bocoran hari ini",
+      "expected": true,
+      "label": "Exact match promosi",
+      "rationale": "Kasus baseline: semua algoritma exact harus menemukan keyword promosi tanpa modifikasi."
+    },
+    {
+      "id": "TC-02",
+      "category": "exact_match_negative",
+      "input": "Silakan cek slot parkir nomor 12 di area kampus untuk kendaraan tamu",
+      "expected": false,
+      "label": "Ambigu - non-promotional slot",
+      "rationale": "Mengukur false positive ketika kata ambiguitas muncul dalam konteks non-promosi; algoritma keyword-only berisiko gagal."
+    },
+    {
+      "id": "TC-03",
+      "category": "random_capitalize",
+      "input": "Cek sekarang sLoT gAcOr dan raih keuntungan besar!",
+      "expected": true,
+      "label": "Kapitalisasi acak",
+      "rationale": "Membedakan algoritma case-sensitive dari case-insensitive; menguji normalisasi kapitalisasi sebelum matching."
+    },
+    {
+      "id": "TC-04",
+      "category": "number_substitution",
+      "input": "Bonus m4xw1n dan sl0t g4c0r siap dimainkan hari ini!",
+      "expected": true,
+      "label": "Substitusi angka (leet)",
+      "rationale": "Menguji normalisasi/preprocessing untuk menangani penggantian huruf dengan angka/simbol (a->4, o->0, e->3, s->5, i->1)."
+    },
+    {
+      "id": "TC-05",
+      "category": "fuzzy_separator",
+      "input": "Promo s-l-o-t g.a.c.o.r cuma hari ini!",
+      "expected": true,
+      "label": "Karakter pemisah di antara huruf",
+      "rationale": "Menguji apakah pipeline dapat menghapus separator (tanda baca/spasi/underscore) dan mendeteksi keyword setelah normalisasi."
+    },
+    {
+      "id": "TC-06",
+      "category": "unicode_lookalike",
+      "input": "ѕlоt gасоr bocoran terpercaya",
+      "expected": true,
+      "label": "Cyrillic homoglyphs",
+      "notes": "а (U+0430 Cyrillic) menggantikan a (U+0061), о (U+043E Cyrillic) menggantikan o (U+006F), е (U+0435 Cyrillic) menggantikan e (U+0065), ѕ (U+0455 Cyrillic) menggantikan s (U+0073)",
+      "rationale": "Menguji batas keras algoritma berbasis ASCII/regex; hanya algoritma dengan Unicode normalization atau mapping homoglyph yang dapat menangani kasus ini."
+    },
+    {
+      "id": "TC-07",
+      "category": "combined_evasion",
+      "input": "Sl0T-G4C0R h4r1 1n1, daftar sekarang!",
+      "expected": true,
+      "label": "Kombinasi teknik evasi",
+      "notes": "digabung: kapitalisasi acak, substitusi angka (leet), separator (dash)",
+      "rationale": "Kasus paling sulit: menggabungkan minimal 3 teknik evasi untuk membedakan kekuatan pipeline preprocessing dan algoritma fuzzy."
+    }
+  ]
+}
