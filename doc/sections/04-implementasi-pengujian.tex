@@ -162,19 +162,19 @@ Subsection ini digunakan untuk melampirkan bukti output eksekusi \texttt{test/te
 \begin{table}[H]
   \centering
   \resizebox{\linewidth}{!}{%
-  \begin{tabular}{lccccccccc}
-    \hline
-    Test Case & Expected & Pipeline & KMP & BM & AhoCorasick & RabinKarp & RegEx & Fuzzy & Label \\
-    \hline
-    TC-01 & true & true & true & true & true & true & false & true & TP \\
-    TC-02 & false & true & true & true & true & true & false & true & FP \\
-    TC-03 & true & true & true & true & true & true & false & true & TP \\
-    TC-04 & true & true & false & false & false & false & false & true & TP \\
-    TC-05 & true & false & false & false & false & false & false & false & FN \\
-    TC-06 & true & true & true & true & true & true & false & true & TP \\
-    TC-07 & true & true & true & true & true & true & false & true & TP \\
-    \hline
-  \end{tabular}%
+    \begin{tabular}{lccccccccc}
+      \hline
+      Test Case & Expected & Pipeline & KMP   & BM    & AhoCorasick & RabinKarp & RegEx & Fuzzy & Label \\
+      \hline
+      TC-01     & true     & true     & true  & true  & true        & true      & false & true  & TP    \\
+      TC-02     & false    & true     & true  & true  & true        & true      & false & true  & FP    \\
+      TC-03     & true     & true     & true  & true  & true        & true      & false & true  & TP    \\
+      TC-04     & true     & true     & false & false & false       & false     & false & true  & TP    \\
+      TC-05     & true     & false    & false & false & false       & false     & false & false & FN    \\
+      TC-06     & true     & true     & true  & true  & true        & true      & false & true  & TP    \\
+      TC-07     & true     & true     & true  & true  & true        & true      & false & true  & TP    \\
+      \hline
+    \end{tabular}%
   }
   \caption{Perbandingan hasil setiap test case terhadap setiap algoritma (berdasarkan output CLI)}
 \end{table}
@@ -183,15 +183,15 @@ Subsection ini digunakan untuk melampirkan bukti output eksekusi \texttt{test/te
   \centering
   \begin{tabular}{lrrrr}
     \hline
-    Algoritma & TP & FP & FN & TN \\
+    Algoritma            & TP & FP & FN & TN \\
     \hline
-    Pipeline & 5 & 1 & 1 & 0 \\
-    KMP & 4 & 1 & 2 & 0 \\
-    Boyer--Moore & 4 & 1 & 2 & 0 \\
-    AhoCorasick & 4 & 1 & 2 & 0 \\
-    RabinKarp & 4 & 1 & 2 & 0 \\
-    RegEx & 0 & 0 & 6 & 1 \\
-    Weighted Levenshtein & 5 & 1 & 1 & 0 \\
+    Pipeline             & 5  & 1  & 1  & 0  \\
+    KMP                  & 4  & 1  & 2  & 0  \\
+    Boyer--Moore         & 4  & 1  & 2  & 0  \\
+    AhoCorasick          & 4  & 1  & 2  & 0  \\
+    RabinKarp            & 4  & 1  & 2  & 0  \\
+    RegEx                & 0  & 0  & 6  & 1  \\
+    Weighted Levenshtein & 5  & 1  & 1  & 0  \\
     \hline
   \end{tabular}
   \caption{Ringkasan metrik TP/FP/FN/TN per algoritma dari output CLI}
@@ -211,12 +211,12 @@ Bagian analisis juga dapat memuat pengamatan terhadap normalisasi teks. Jika nor
 
 \subsection{Pengujian Integrasi}
 
-Pengujian integrasi dilakukan untuk memverifikasi bahwa extension berfungsi sebagai produk utuh di browser, 
-bukan hanya algoritma dalam isolasi. Fokus adalah pada injeksi content script, manipulasi DOM, rendering UI, 
+Pengujian integrasi dilakukan untuk memverifikasi bahwa extension berfungsi sebagai produk utuh di browser,
+bukan hanya algoritma dalam isolasi. Fokus adalah pada injeksi content script, manipulasi DOM, rendering UI,
 dan manajemen state extension (enable/disable).
 
-Berbeda dengan unit test yang menggunakan CLI runner, integration test menjalankan extension di browser Chromium/Chrome 
-dan mengamati perilaku visual seperti highlight, badge popup, dan respons terhadap user action. Tes ini hanya menggunakan 
+Berbeda dengan unit test yang menggunakan CLI runner, integration test menjalankan extension di browser Chromium/Chrome
+dan mengamati perilaku visual seperti highlight, badge popup, dan respons terhadap user action. Tes ini hanya menggunakan
 1 representative test case (TC-01 exact match) untuk menunjukkan end-to-end flow, bukan mengulangi semua 7 kasus.
 
 \subsubsection{Skenario Pengujian Integrasi}
@@ -228,11 +228,11 @@ Pengujian integrasi mencakup dua skenario utama:
   \renewcommand{\arraystretch}{1.2}
   \begin{tabular}{|p{2cm}|p{3cm}|p{4cm}|p{2cm}|}
     \hline
-    \textbf{No} & \textbf{Skenario} & \textbf{Yang Diverifikasi} & \textbf{Input} \\
+    \textbf{No} & \textbf{Skenario}                                  & \textbf{Yang Diverifikasi}                         & \textbf{Input}        \\
     \hline
-    1 & Halaman berisi teks judol → badge/highlight muncul & End-to-end flow (DOM → content script → rendering) & TC-01 \\
+    1           & Halaman berisi teks judol → badge/highlight muncul & End-to-end flow (DOM → content script → rendering) & TC-01                 \\
     \hline
-    2 & Teks judol di-load dinamis & Mutation observer menangkap DOM baru & Custom dynamic insert \\
+    2           & Teks judol di-load dinamis                         & Mutation observer menangkap DOM baru               & Custom dynamic insert \\
     \hline
   \end{tabular}
   \caption{Matriks skenario pengujian integrasi extension}
@@ -278,12 +278,12 @@ Bukti kesuksesan: screenshot sebelum dan sesudah DOM mutation, menunjukkan highl
   \centering
   \begin{tabular}{lc}
     \hline
-    Skenario & Status \\
+    Skenario                 & Status          \\
     \hline
-    Test 1 (End-to-End) & ✓ PASS\\
-    Test 2 (Dynamic Content) & ✓ PASS\\
+    Test 1 (End-to-End)      & PASS            \\
+    Test 2 (Dynamic Content) & PASS            \\
     \hline
-    \textbf{Total} & \textbf{2 PASS} \\
+    \textbf{Total}           & \textbf{2 PASS} \\
     \hline
   \end{tabular}
   \caption{Ringkasan hasil pengujian integrasi}
@@ -291,7 +291,7 @@ Bukti kesuksesan: screenshot sebelum dan sesudah DOM mutation, menunjukkan highl
 
 \subsubsection{Analisis Integrasi}
 
-Pengujian integrasi memverifikasi bahwa komponen sistem yang testable di unit test juga berfungsi dengan baik dalam konteks browser. 
+Pengujian integrasi memverifikasi bahwa komponen sistem yang testable di unit test juga berfungsi dengan baik dalam konteks browser.
 Test case 1 memastikan bahwa logika deteksi dari CLI dapat diteljur end-to-end di halaman nyata. Test case 2 menguji edge case DOM dinamis yang tidak tercakup oleh unit test.
 
 Integrasi kedua skenario ini menunjukkan bahwa extension siap untuk uji coba di production environment atau QA lanjutan.
