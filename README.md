@@ -1,22 +1,22 @@
 # Judol Detector
 
 ![Judol Detector](cover.png)
-![alt text](image.png)
-Judol Detector adalah Chromium browser extension berbasis TypeScript untuk mendeteksi konten judi online pada halaman web. Aplikasi ini menjalankan pencocokan exact, regex, fuzzy matching, highlight DOM, tooltip, popup statistik realtime, blur teks, dan OCR pada gambar.
 
-## Fitur Program
+Judol Detector is a TypeScript-based Chromium browser extension for detecting online gambling content on web pages. It performs exact matching, regex, fuzzy matching, DOM highlighting, tooltips, real-time statistics popup, text blur, and OCR on images.
 
-- Deteksi exact matching menggunakan KMP dan Boyer-Moore dari `keywords/keywords.txt`.
-- Deteksi pola umum `<kata><angka>` menggunakan RegEx.
-- Deteksi karakter manipulatif atau mirip visual menggunakan weighted Levenshtein distance.
-- Bonus engine: Aho-Corasick dan Rabin-Karp.
-- Highlight elemen DOM yang terdeteksi tanpa merusak layout.
-- Tooltip custom saat hover pada elemen terdeteksi.
-- Popup statistik realtime untuk jumlah match dan waktu eksekusi algoritma.
-- Toggle blur teks untuk menyamarkan konten yang terdeteksi.
-- OCR pada gambar untuk mendeteksi teks judol yang tersembunyi di image.
+## Features
 
-## Struktur Project
+- Exact matching detection using KMP and Boyer-Moore from `keywords/keywords.txt`.
+- Common pattern detection `<word><number>` using RegEx.
+- Manipulative or visually similar character detection using weighted Levenshtein distance.
+- Bonus engines: Aho-Corasick and Rabin-Karp.
+- DOM element highlighting for detected content without breaking layout.
+- Custom tooltip on hover for detected elements.
+- Real-time statistics popup showing match count and algorithm execution time.
+- Text blur toggle to obscure detected content.
+- OCR on images to detect gambling text hidden inside image elements.
+
+## Project Structure
 
 ```text
 judol-detector/
@@ -38,58 +38,60 @@ judol-detector/
 └── spesifikasi/
 ```
 
-## Penjelasan Singkat Algoritma KMP dan Boyer-Moore
+## Brief Explanation of KMP and Boyer-Moore
 
 ### KMP
 
-KMP melakukan pencocokan string dengan memanfaatkan failure function atau prefix table. Saat terjadi mismatch, algoritma tidak mengulang pencarian dari awal, melainkan melompat ke prefiks terpanjang yang masih relevan. Implementasi di repo ini dibuat from scratch dan menghitung jumlah comparison secara manual.
+KMP performs string matching by leveraging a failure function (prefix table). On a mismatch, the algorithm does not restart from the beginning — instead, it jumps to the longest relevant prefix. This implementation is built from scratch and manually tracks the number of comparisons.
 
 ### Boyer-Moore
 
-Boyer-Moore mencocokkan pattern dari kanan ke kiri dan memanfaatkan dua heuristik utama: bad character melalui last occurrence table, serta good suffix melalui border/good suffix table. Saat mismatch, pattern digeser sejauh mungkin berdasarkan dua heuristik tersebut. Implementasi di repo ini juga dibuat from scratch dan menghitung comparison secara manual.
+Boyer-Moore matches the pattern from right to left and uses two main heuristics: bad character via a last occurrence table, and good suffix via a border/good suffix table. On a mismatch, the pattern is shifted as far as possible based on these two heuristics. This implementation is also built from scratch with manual comparison counting.
 
-## Requirement Program
+## Requirements
 
-- Node.js 18 atau lebih baru.
+- Node.js 18 or later.
 - npm.
-- Browser berbasis Chromium, seperti Google Chrome atau Microsoft Edge.
+- A Chromium-based browser such as Google Chrome or Microsoft Edge.
 
-## Instalasi
+## Installation
 
 ```bash
 npm install
 ```
 
-## Build Project
+## Build
 
 ```bash
 npm run build
 ```
 
-Hasil build akan tersimpan di folder `dist/`.
+The build output will be saved in the `dist/` folder.
 
-## Cara Load Extension di Chrome
+## Loading the Extension in Chrome
 
-1. Buka `chrome://extensions/`.
-2. Aktifkan **Developer mode**.
-3. Klik **Load unpacked**.
-4. Pilih folder `dist/` dari project ini.
-5. Buka halaman web target, lalu gunakan popup extension untuk memulai scan.
+1. Open `chrome://extensions/`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked**.
+4. Select the `dist/` folder from this project.
+5. Open a target web page, then use the extension popup to start scanning.
 
 ## How to Contribute
 
-1. Buat branch baru untuk perubahan yang ingin dikerjakan.
-2. Jalankan `npm install` jika dependency belum terpasang.
-3. Lakukan perubahan secukupnya dan tetap ikuti struktur kode yang sudah ada.
-4. Pastikan project lolos build dengan `npm run build`.
-5. Jika relevan, jalankan `npm run typecheck` sebelum membuat pull request.
-6. Kirim pull request dengan ringkasan perubahan yang jelas.
+1. Create a new branch for the changes you want to work on.
+2. Run `npm install` if dependencies are not yet installed.
+3. Make your changes while following the existing code structure.
+4. Ensure the project builds successfully with `npm run build`.
+5. If relevant, run `npm run typecheck` before opening a pull request.
+6. Submit a pull request with a clear summary of your changes.
 
-## Author
+## Authors
 
-- Vincent Rionarlie (13524031)
-- Jason Edward Salim (13524034)
-- Muhammad Aufar Rizqi Kusuma (13524061)
+| Name                        | Student ID |
+|-----------------------------|------------|
+| Vincent Rionarlie           | 13524031   |
+| Jason Edward Salim          | 13524034   |
+| Muhammad Aufar Rizqi Kusuma | 13524061   |
 
 ## License
 
