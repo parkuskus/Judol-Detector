@@ -1,7 +1,7 @@
 # Judol Detector
 
-![Judol Detector](test/image/judol-5.png)
-
+![Judol Detector](cover.png)
+![alt text](image.png)
 Judol Detector adalah Chromium browser extension berbasis TypeScript untuk mendeteksi konten judi online pada halaman web. Aplikasi ini menjalankan pencocokan exact, regex, fuzzy matching, highlight DOM, tooltip, popup statistik realtime, blur teks, dan OCR pada gambar.
 
 ## Fitur Program
